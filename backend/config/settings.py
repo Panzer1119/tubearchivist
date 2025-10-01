@@ -228,6 +228,9 @@ except ValueError:
     # fails in unittests bootstrap
     pass
 
+# Lost Media Finder integration settings
+LOST_MEDIA_FINDER_HOST = "https://findyoutubevideo.thetechrobo.ca"
+
 # API
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",

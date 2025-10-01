@@ -42,6 +42,80 @@ class SponsorBlockSerializer(serializers.Serializer):
     segments = SponsorBlockSegmentSerializer(many=True)
 
 
+class LostMediaFinderLinkContainsSerializer(serializers.Serializer):
+    """serialize lostmediafinder link contains"""
+
+    video = serializers.BooleanField()
+    metadata = serializers.BooleanField()
+    comments = serializers.BooleanField()
+    thumbnail = serializers.BooleanField()
+    captions = serializers.BooleanField()
+    standalone_video = serializers.BooleanField()
+    standalone_audio = serializers.BooleanField()
+    single_frame = serializers.BooleanField()
+
+
+class LostMediaFinderLinkSerializer(serializers.Serializer):
+    """serialize lostmediafinder link"""
+
+    _type = serializers.CharField()
+    classname = serializers.CharField()
+    type = serializers.CharField()
+    url = serializers.URLField()
+    title = serializers.CharField()
+    note = serializers.CharField(required=False)
+    contains = LostMediaFinderLinkContainsSerializer()
+
+
+class LostMediaFinderServiceSerializer(serializers.Serializer):
+    """serialize lostmediafinder service"""
+
+    _type = serializers.CharField()
+    classname = serializers.CharField()
+    type = serializers.CharField()
+    name = serializers.CharField()
+    lastupdated = serializers.IntegerField()
+    archived = serializers.BooleanField()
+    metaonly = serializers.BooleanField()
+    comments = serializers.BooleanField()
+    maybe_paywalled = serializers.BooleanField()
+    note = serializers.CharField(required=False)
+    error = serializers.CharField(required=False)
+    available = LostMediaFinderLinkSerializer(many=True)
+    # This field is not used as of 2025-10-01
+    # suppl = serializers.CharField(required=False)
+    # This field is just a dump of the original data
+    # rawraw = serializers.CharField(required=False)
+
+
+class LostMediaFinderVerdictSerializer(serializers.Serializer):
+    """serialize lostmediafinder verdict"""
+
+    video = serializers.BooleanField()
+    metaonly = serializers.BooleanField()
+    comments = serializers.BooleanField()
+    human_friendly = serializers.CharField()
+
+
+class LostMediaFinderSearchResultSerializer(serializers.Serializer):
+    """serialize lostmediafinder search_result"""
+
+    _type = serializers.CharField()
+    api_version = serializers.IntegerField()
+    id = serializers.CharField()
+    status = serializers.CharField()
+    verdict = LostMediaFinderVerdictSerializer()
+    keys = LostMediaFinderServiceSerializer(many=True)
+
+
+class LostMediaFinderSerializer(serializers.Serializer):
+    """serialize lostmediafinder"""
+
+    last_refresh = serializers.IntegerField()
+    verdict = LostMediaFinderVerdictSerializer()
+    search_result = LostMediaFinderSearchResultSerializer()
+
+
 class StatsSerializer(serializers.Serializer):
     """serialize stats"""
 
@@ -107,6 +181,7 @@ class VideoSerializer(serializers.Serializer):
     )
     published = serializers.CharField()
     sponsorblock = SponsorBlockSerializer(allow_null=True, required=False)
+    lostmediafinder = LostMediaFinderSerializer(allow_null=True)
     stats = StatsSerializer()
     streams = StreamItemSerializer(many=True)
     subtitles = SubtitleItemSerializer(many=True, required=False)

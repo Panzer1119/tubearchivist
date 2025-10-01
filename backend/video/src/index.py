@@ -145,6 +145,81 @@ class SponsorBlock:
         return {"success": True}, 200
 
 
+class LostMediaFinder:
+    """handle lostmediafinder integration"""
+
+    API = f"{settings.LOST_MEDIA_FINDER_HOST}/api/v5"
+
+    def __init__(self):
+        self.user_agent = f"{settings.TA_UPSTREAM} {settings.TA_VERSION}"
+        self.last_refresh = int(datetime.now().timestamp())
+
+    def search_video(self, youtube_id):
+        """search video with the API"""
+        url = f"{self.API}/{youtube_id}"
+        headers = {"User-Agent": self.user_agent}
+        print(f"{youtube_id}: lostmediafinder search video")
+        try:
+            response = requests.get(url, headers=headers, timeout=120)
+        except (requests.ReadTimeout, requests.ConnectionError) as err:
+            print(f"{youtube_id}: lostmediafinder API error: {str(err)}")
+            return False
+
+        if not response.ok:
+            print(f"{youtube_id}: lostmediafinder failed: {response.status_code}")
+            if response.status_code == 503:
+                return False
+
+            verdict_dict = self._get_verdict_dict(
+                human_friendly=f"Search failed with status code: {response.status_code}"
+            )
+
+            search_result_dict = {
+                "last_refresh": self.last_refresh,
+                "verdict": verdict_dict,
+                "search_result": {},
+            }
+        else:
+            search_result = response.json()
+            search_result_dict = self._get_search_result_dict(search_result)
+
+        return search_result_dict
+
+    def _get_search_result_dict(self, search_result):
+        """format and process response"""
+        verdict_dict = self._get_verdict_dict(
+            verdict=search_result["verdict"]
+        )
+
+        # Convert field lastupdated from unix timestamp with fractions to int ms
+        search_result["keys"] = [
+            {**key, "lastupdated": int(key["lastupdated"] * 1000)}
+            for key in search_result.get("keys", [])
+        ]
+
+        search_result_dict = {
+            "last_refresh": self.last_refresh,
+            "verdict": verdict_dict,
+            "search_result": search_result,
+        }
+
+        return search_result_dict
+
+    def _get_verdict_dict(self, verdict=None, human_friendly=None):
+        """format and process verdict"""
+        if not verdict:
+            verdict_dict = {
+                "video": False,
+                "metaonly": False,
+                "comments": False,
+                "human_friendly": human_friendly or "Video not found.",
+            }
+        else:
+            verdict_dict = verdict
+
+        return verdict_dict
+
+
 class YoutubeVideo(YouTubeItem, YoutubeSubtitle):
     """represents a single youtube video"""
 
@@ -180,6 +255,9 @@ class YoutubeVideo(YouTubeItem, YoutubeSubtitle):
         if self._check_get_sb():
             self._get_sponsorblock()
 
+        if self._check_get_lmf():
+            self._search_lostmediafinder()
+
         return
 
     def _check_get_sb(self):
@@ -192,6 +270,19 @@ class YoutubeVideo(YouTubeItem, YoutubeSubtitle):
 
             if "integrate_sponsorblock" in overwrite:
                 return overwrite.get("integrate_sponsorblock")
+
+        return integrate
+
+    def _check_get_lmf(self):
+        """check if need to run lost media finder"""
+        integrate = self.config["downloads"]["integrate_lostmediafinder"]
+
+        if overwrite := self.json_data["channel"].get("channel_overwrites"):
+            if not overwrite:
+                return integrate
+
+            if "integrate_lostmediafinder" in overwrite:
+                return overwrite.get("integrate_lostmediafinder")
 
         return integrate
 
@@ -249,9 +340,9 @@ class YoutubeVideo(YouTubeItem, YoutubeSubtitle):
         if not self.youtube_id == remote_id:
             # unexpected redirect
             message = (
-                f"[reindex][{self.youtube_id}] got an unexpected redirect "
-                + f"to {remote_id}, you are probably getting blocked by YT. "
-                "See FAQ for more details."
+                    f"[reindex][{self.youtube_id}] got an unexpected redirect "
+                    + f"to {remote_id}, you are probably getting blocked by YT. "
+                      "See FAQ for more details."
             )
             raise ValueError(message)
 
@@ -398,6 +489,12 @@ class YoutubeVideo(YouTubeItem, YoutubeSubtitle):
         sponsorblock = SponsorBlock().get_timestamps(self.youtube_id)
         if sponsorblock:
             self.json_data["sponsorblock"] = sponsorblock
+
+    def _search_lostmediafinder(self):
+        """get optional lostmediafinder search result"""
+        lostmediafinder = LostMediaFinder().search_video(self.youtube_id)
+        if lostmediafinder:
+            self.json_data["lostmediafinder"] = lostmediafinder
 
     def check_subtitles(self, subtitle_files=False):
         """optionally add subtitles"""
