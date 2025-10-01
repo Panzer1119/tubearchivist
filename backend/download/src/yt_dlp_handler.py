@@ -227,6 +227,9 @@ class VideoDownloader(DownloaderBase):
     @staticmethod
     def _handle_error(youtube_id, message):
         """store error message"""
+
+        #TODO Try to search the video with lostmediafinder here?
+
         data = {"doc": {"message": message}}
         _, _ = ElasticWrap(f"ta_download/_update/{youtube_id}").post(data=data)
 
