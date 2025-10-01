@@ -171,6 +171,7 @@ We have come far, nonetheless we are not short of ideas on how to improve and ex
 - [ ] Per user videos/channel/playlists
 
 Implemented:
+- [X] Add [LostMediaFinder](https://findyoutubevideo.thetechrobo.ca/) integration [2025-09-30]
 - [X] Search download queue [2025-07-31]
 - [X] Configure shorts, streams and video sizes per channel [2024-07-15]
 - [X] User created playlists [2024-04-10]
