@@ -28,6 +28,7 @@ export type AppSettingsConfigType = {
     extractor_lang: string | null;
     integrate_ryd: boolean;
     integrate_sponsorblock: boolean;
+    integrate_lostmediafinder: boolean;
   };
   application: {
     enable_snapshot: boolean;

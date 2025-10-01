@@ -19,7 +19,7 @@ import {
 } from '../configuration/constants/ViewStyle';
 import ScrollToTopOnNavigate from '../components/ScrollToTop';
 import EmbeddableVideoPlayer from '../components/EmbeddableVideoPlayer';
-import { SponsorBlockType } from './Video';
+import { SponsorBlockType, LostMediaFinderType } from './Video';
 import { useUserConfigStore } from '../stores/UserConfigStore';
 import { ApiResponseType } from '../functions/APIClient';
 import { useFilterBarTempConf } from '../stores/FilterbarTempConf';
@@ -70,6 +70,7 @@ export type VideoType = {
   player: PlayerType;
   published: string;
   sponsorblock?: SponsorBlockType;
+  lostmediafinder?: LostMediaFinderType;
   playlist: string[];
   stats: StatsType;
   streams: StreamType[] | undefined;
@@ -99,6 +100,7 @@ export type DownloadsType = {
   extractor_lang: boolean;
   integrate_ryd: boolean;
   integrate_sponsorblock: boolean;
+  integrate_lostmediafinder: boolean;
 };
 
 export type ConfigType = {

@@ -79,6 +79,7 @@ const SettingsApplication = () => {
   const [showApiToken, setShowApiToken] = useState(false);
   const [downloadDislikes, setDownloadDislikes] = useState(false);
   const [enableSponsorBlock, setEnableSponsorBlock] = useState(false);
+  const [enableLostMediaFinder, setEnableLostMediaFinder] = useState(false);
   const [enableCast, setEnableCast] = useState(false);
 
   // Snapshots
@@ -132,6 +133,7 @@ const SettingsApplication = () => {
     // Integrations
     setDownloadDislikes(appSettingsConfigData?.downloads.integrate_ryd || false);
     setEnableSponsorBlock(appSettingsConfigData?.downloads.integrate_sponsorblock || false);
+    setEnableLostMediaFinder(appSettingsConfigData?.downloads.integrate_lostmediafinder || false);
     setEnableCast(appSettingsConfigData?.application.enable_cast || false);
 
     // Snapshots
@@ -927,6 +929,21 @@ const SettingsApplication = () => {
                 <ToggleConfig
                   name="downloads.integrate_sponsorblock"
                   value={enableSponsorBlock}
+                  updateCallback={handleUpdateConfig}
+                />
+              </div>
+              <div className="settings-box-wrapper">
+                <div>
+                  <p>
+                    Enable{' '}
+                    <a href="https://findyoutubevideo.thetechrobo.ca/" target="_blank" rel="noopener noreferrer">
+                      LostMediaFinder
+                    </a>
+                  </p>
+                </div>
+                <ToggleConfig
+                  name="downloads.integrate_lostmediafinder"
+                  value={enableLostMediaFinder}
                   updateCallback={handleUpdateConfig}
                 />
               </div>

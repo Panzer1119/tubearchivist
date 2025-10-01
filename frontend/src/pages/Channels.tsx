@@ -23,6 +23,7 @@ type ChannelOverwritesType = {
   autodelete_days: number | null;
   index_playlists: boolean | null;
   integrate_sponsorblock: boolean | null;
+  integrate_lostmediafinder: boolean | null;
   subscriptions_channel_size: number | null;
   subscriptions_live_channel_size: number | null;
   subscriptions_shorts_channel_size: number | null;

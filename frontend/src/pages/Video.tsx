@@ -101,6 +101,66 @@ export type SponsorBlockType = {
   message?: string;
 };
 
+export type LostMediaFinderLinkContainsType = {
+  video: boolean;
+  metadata: boolean;
+  comments: boolean;
+  thumbnail: boolean;
+  captions: boolean;
+  standalone_video: boolean;
+  standalone_audio: boolean;
+  single_frame: boolean;
+}
+
+export type LostMediaFinderLinkType = {
+  _type: string;
+  classname: string;
+  type: string;
+  url: string;
+  title: string;
+  note?: string;
+  contains: LostMediaFinderLinkContainsType;
+}
+
+export type LostMediaFinderServiceType = {
+  _type: string;
+  classname: string;
+  type: string;
+  name: string;
+  lastupdated: number;
+  archived: boolean;
+  metaonly: boolean;
+  comments: boolean;
+  maybe_paywalled: boolean;
+  note?: string;
+  error?: string;
+  available: LostMediaFinderLinkType[];
+  suppl?: string; // This field is not used as of 2025-10-01
+  rawraw?: unknown; // This field is just a dump of the original data
+}
+
+export type LostMediaFinderVerdictType = {
+  video: boolean;
+  metaonly: boolean;
+  comments: boolean;
+  human_friendly: string;
+}
+
+export type LostMediaFinderSearchResultType = {
+  _type: string;
+  api_version: number;
+  id: string;
+  status: string;
+  verdict: LostMediaFinderVerdictType;
+  keys: LostMediaFinderServiceType[];
+}
+
+export type LostMediaFinderType = {
+  last_refresh: number;
+  verdict: LostMediaFinderVerdictType;
+  search_result: LostMediaFinderSearchResultType;
+}
+
 const Video = () => {
   const { videoId } = useParams() as VideoParams;
   const navigate = useNavigate();
@@ -296,6 +356,60 @@ const Video = () => {
                 </p>
               )}
               {!video.active && <p>Youtube: Deactivated</p>}
+              {video.lostmediafinder?.verdict && (
+                <>
+                  <p>
+                    LostMediaFinder:{' '}
+                    {
+                      video.lostmediafinder.verdict.human_friendly ||
+                      JSON.stringify(video.lostmediafinder.verdict)
+                    }
+                  </p>
+                  <p>Last refreshed: {formatDate(video.lostmediafinder.last_refresh * 1000)}</p>
+                  <ul>
+                    {video.lostmediafinder?.search_result?.keys
+                      ?.filter((k) => k.available && k.available.length > 0)
+                      .map((k) => (
+                        <li key={k.classname} style={{ marginBottom: "15px" }}>
+                          <div>
+                            <strong>{k.name}</strong>
+                          </div>
+                          {k.note && (
+                            <div
+                              style={{
+                                fontSize: "0.85em",
+                                color: "#666",
+                                marginTop: "2px",
+                                marginLeft: "2px",
+                              }}
+                            >
+                              ℹ: {k.note}
+                            </div>
+                          )}
+                          <div style={{ marginTop: "5px" }}>
+                            {k.available.map((link) => (
+                              <a
+                                key={link.url}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ marginRight: "10px" }}
+                              >
+                                {link.title}
+                              </a>
+                            ))}
+                          </div>
+                        </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              {!video.lostmediafinder && (
+                <p>LostMediaFinder: Not Searched</p>
+              )}
+              {video.lostmediafinder && !video.lostmediafinder.verdict && (
+                <p>LostMediaFinder: Invalid Response</p>
+              )}
             </div>
           </div>
           <div className="info-box-item">

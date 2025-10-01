@@ -50,6 +50,7 @@ const ChannelAbout = () => {
   const [autoDeleteAfter, setAutoDeleteAfter] = useState<number | null>(null);
   const [indexPlaylists, setIndexPlaylists] = useState(false);
   const [enableSponsorblock, setEnableSponsorblock] = useState<boolean | null>(null);
+  const [enableLostMediaFinder, setEnableLostMediaFinder] = useState<boolean | null>(null);
   const [pageSizeVideo, setPageSizeVideo] = useState<number | null>(null);
   const [pageSizeShorts, setPageSizeShorts] = useState<number | null>(null);
   const [pageSizeStreams, setPageSizeStreams] = useState<number | null>(null);
@@ -70,6 +71,9 @@ const ChannelAbout = () => {
         setIndexPlaylists(channelResponseData?.channel_overwrites?.index_playlists ?? false);
         setEnableSponsorblock(
           channelResponseData?.channel_overwrites?.integrate_sponsorblock ?? null,
+        );
+        setEnableLostMediaFinder(
+          channelResponseData?.channel_overwrites?.integrate_lostmediafinder ?? null,
         );
         setPageSizeVideo(
           channelResponseData?.channel_overwrites?.subscriptions_channel_size ?? null,
@@ -102,6 +106,16 @@ const ChannelAbout = () => {
     } else {
       await handleUpdateConfig('integrate_sponsorblock', null);
       setEnableSponsorblock(null);
+    }
+  };
+
+  const handleToggleLostMediaFinder = async (isEnabled: boolean) => {
+    if (isEnabled) {
+      setEnableLostMediaFinder(true);
+      await handleUpdateConfig('integrate_lostmediafinder', false);
+    } else {
+      await handleUpdateConfig('integrate_lostmediafinder', null);
+      setEnableLostMediaFinder(null);
     }
   };
 
@@ -330,6 +344,28 @@ const ChannelAbout = () => {
                     />
                   ) : (
                     <button onClick={() => handleToggleSponsorBlock(true)}>Configure</button>
+                  )}
+                </div>
+              </div>
+              <div className="settings-box-wrapper">
+                <div>
+                  <p>
+                    Overwrite{' '}
+                    <a href="https://findyoutubevideo.thetechrobo.ca/" target="_blank" rel="noopener noreferrer">
+                      LostMediaFinder
+                    </a>
+                  </p>
+                </div>
+                <div>
+                  {enableLostMediaFinder !== null ? (
+                    <ToggleConfig
+                      name="integrate_lostmediafinder"
+                      value={enableLostMediaFinder}
+                      updateCallback={handleUpdateConfig}
+                      resetCallback={handleToggleLostMediaFinder}
+                    />
+                  ) : (
+                    <button onClick={() => handleToggleLostMediaFinder(true)}>Configure</button>
                   )}
                 </div>
               </div>
