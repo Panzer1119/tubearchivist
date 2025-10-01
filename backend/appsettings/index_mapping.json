@@ -64,6 +64,9 @@
                         "integrate_sponsorblock": {
                             "type": "boolean"
                         },
+                        "integrate_lostmediafinder": {
+                            "type": "boolean"
+                        },
                         "subscriptions_channel_size": {
                             "type": "long"
                         },
@@ -177,6 +180,9 @@
                                     "type": "boolean"
                                 },
                                 "integrate_sponsorblock": {
+                                    "type": "boolean"
+                                },
+                                "integrate_lostmediafinder": {
                                     "type": "boolean"
                                 },
                                 "subscriptions_channel_size": {
@@ -345,7 +351,7 @@
                         },
                         "width": {
                             "type": "short"
-                        }                        
+                        }
                     }
                 },
                 "subtitles": {
@@ -412,7 +418,186 @@
                     "type": "keyword"
                 },
                 "youtube_id": {
-                    "type": "keyword"
+                  "type": "keyword"
+                },
+                "lostmediafinder": {
+                    "properties": {
+                        "last_refresh": {
+                            "type": "date",
+                            "format": "epoch_second"
+                        },
+                        "verdict": {
+                            "properties": {
+                                "video": {
+                                    "type": "boolean"
+                                },
+                                "metaonly": {
+                                    "type": "boolean"
+                                },
+                                "comments": {
+                                    "type": "boolean"
+                                },
+                                "human_friendly": {
+                                    "type": "text",
+                                    "index": false
+                                }
+                            }
+                        },
+                        "search_result": {
+                            "properties": {
+                                "_type": {
+                                  "type": "keyword",
+                                  "index": false
+                                },
+                                "api_version": {
+                                    "type": "byte"
+                                },
+                                "id": {
+                                    "type": "keyword"
+                                },
+                                "status": {
+                                    "type": "keyword"
+                                },
+                                "verdict": {
+                                    "properties": {
+                                         "video": {
+                                             "type": "boolean"
+                                         },
+                                         "metaonly": {
+                                             "type": "boolean"
+                                         },
+                                         "comments": {
+                                             "type": "boolean"
+                                         },
+                                         "human_friendly": {
+                                             "type": "text",
+                                             "index": false
+                                         }
+                                     }
+                                },
+                                "keys": {
+                                    "type": "nested",
+                                    "properties": {
+                                        "_type": {
+                                            "type": "keyword",
+                                            "index": false
+                                        },
+                                        "classname": {
+                                            "type": "keyword",
+                                            "index": false
+                                        },
+                                        "type": {
+                                            "type": "constant_keyword",
+                                            "value": "service"
+                                        },
+                                        "name": {
+                                            "type": "keyword"
+                                        },
+                                        "lastupdated": {
+                                            "type": "date",
+                                            "format": "epoch_millis"
+                                        },
+                                        "archived": {
+                                            "type": "boolean"
+                                        },
+                                        "metaonly": {
+                                            "type": "boolean"
+                                        },
+                                        "comments": {
+                                            "type": "boolean"
+                                        },
+                                        "maybe_paywalled": {
+                                            "type": "boolean"
+                                        },
+                                        "note": {
+                                            "type": "text",
+                                            "fields": {
+                                                "keyword": {
+                                                    "type": "keyword",
+                                                    "ignore_above": 256,
+                                                    "normalizer": "to_lower"
+                                                }
+                                            }
+                                        },
+                                        "error": {
+                                            "type": "text",
+                                            "index": false
+                                        },
+                                        "available": {
+                                            "type": "nested",
+                                            "properties": {
+                                                "_type": {
+                                                    "type": "keyword",
+                                                    "index": false
+                                                },
+                                                "classname": {
+                                                   "type": "keyword",
+                                                   "index": false
+                                                },
+                                                "type": {
+                                                    "type": "constant_keyword",
+                                                    "value": "link"
+                                                },
+                                                "url": {
+                                                    "type": "keyword",
+                                                    "index": false
+                                                },
+                                                "title": {
+                                                    "type": "text",
+                                                    "fields": {
+                                                        "keyword": {
+                                                            "type": "keyword",
+                                                            "ignore_above": 256,
+                                                            "normalizer": "to_lower"
+                                                        }
+                                                    }
+                                                },
+                                                "note": {
+                                                    "type": "text",
+                                                    "fields": {
+                                                      "keyword": {
+                                                        "type": "keyword",
+                                                        "ignore_above": 256,
+                                                        "normalizer": "to_lower"
+                                                      }
+                                                    }
+                                                },
+                                                "contains": {
+                                                    "type": "nested",
+                                                    "properties": {
+                                                        "video": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "metadata": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "comments": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "thumbnail": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "captions": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "standalone_video": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "standalone_audio": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "single_frame": {
+                                                            "type": "boolean"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             },
             "expected_set": {
@@ -465,7 +650,7 @@
                 "timestamp": {
                     "type": "date",
                     "format": "epoch_second"
-                },                
+                },
                 "title": {
                     "type": "text",
                     "fields": {
@@ -580,7 +765,7 @@
                 },
                 "playlist_sort_order": {
                     "type": "keyword"
-                },                
+                },
                 "playlist_subscribed": {
                     "type": "boolean"
                 },
