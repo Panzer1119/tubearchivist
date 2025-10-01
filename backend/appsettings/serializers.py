@@ -60,6 +60,7 @@ class AppConfigDownloadsSerializer(
     extractor_lang = serializers.CharField(allow_null=True)
     integrate_ryd = serializers.BooleanField()
     integrate_sponsorblock = serializers.BooleanField()
+    integrate_lostmediafinder = serializers.BooleanField()
 
 
 class AppConfigAppSerializer(
