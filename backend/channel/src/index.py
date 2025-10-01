@@ -269,6 +269,7 @@ class YoutubeChannel(YouTubeItem):
             "autodelete_days",
             "index_playlists",
             "integrate_sponsorblock",
+            "integrate_lostmediafinder",
             "subscriptions_channel_size",
             "subscriptions_live_channel_size",
             "subscriptions_shorts_channel_size",

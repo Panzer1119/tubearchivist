@@ -18,6 +18,9 @@ class ChannelOverwriteSerializer(
     integrate_sponsorblock = serializers.BooleanField(
         required=False, allow_null=True
     )
+    integrate_lostmediafinder = serializers.BooleanField(
+        required=False, allow_null=True
+    )
     subscriptions_channel_size = serializers.IntegerField(
         required=False, allow_null=True
     )
