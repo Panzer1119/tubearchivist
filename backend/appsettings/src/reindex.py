@@ -324,6 +324,12 @@ class Reindex(ReindexBase):
         )
         video.build_json(media_path=media_url)
         if not video.youtube_meta:
+            # Update lostmediafinder field if it has changed
+            if video.json_data["lostmediafinder"] != es_meta.get(
+                "lostmediafinder"
+            ):
+                video.update_lostmediafinder(video.json_data["lostmediafinder"])
+
             video.deactivate()
             return
 

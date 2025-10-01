@@ -237,6 +237,8 @@ class YoutubeVideo(YouTubeItem, YoutubeSubtitle):
         """build json dict of video"""
         self.get_from_youtube()
         if not self.youtube_meta and not youtube_meta_overwrite:
+            if self._check_get_lmf():
+                self._search_lostmediafinder()
             return
 
         if not self.youtube_meta:

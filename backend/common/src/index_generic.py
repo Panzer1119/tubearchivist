@@ -64,6 +64,22 @@ class YouTubeItem:
         """add json_data to elastic"""
         _, _ = ElasticWrap(self.es_path).put(self.json_data, refresh=True)
 
+    def update_lostmediafinder(self, new_value):
+        """Update lostmediafinder field using script"""
+        print(f"{self.youtube_id}: updating lostmediafinder field via script")
+
+        path = f"{self.index_name}/_update/{self.youtube_id}?refresh=true"
+        data = {
+            "script": {
+                "source": "ctx._source.lostmediafinder = params.value",
+                "params": {
+                    "value": new_value
+                }
+            }
+        }
+
+        _, _ = ElasticWrap(path).post(data)
+
     def deactivate(self):
         """deactivate document in es"""
         print(f"{self.youtube_id}: deactivate document")
